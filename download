@@ -1,0 +1,46 @@
+# sales-splitter
+
+Site ID の末尾2桁ごとに売上を分けて、サマリー付きのExcelファイルを自動生成するスクリプトです。
+
+## 使い方
+
+```bash
+pip install -r requirements.txt
+
+python split_sales_by_siteid.py 入力ファイル.xlsx
+```
+
+オプション:
+
+```bash
+python split_sales_by_siteid.py 入力.xlsx 出力.xlsx \
+    --period "2026年4月" \
+    --label "株式会社Sunny Lab" \
+    --site-names site_names.json
+```
+
+| オプション | 説明 |
+|---|---|
+| `input` | 入力Excelファイル（決済額明細を含むもの）※必須 |
+| `output` | 出力ファイルパス（省略時は自動命名） |
+| `--period` | 集計期間ラベル（例: `2026年4月`） |
+| `--label` | ファイルラベル（例: `株式会社1.2.3`） |
+| `--site-names` | Site ID → サイト名 のマッピングJSON |
+
+### site_names.json の例
+
+```json
+{
+    "76208801": "リスタート",
+    "76208802": "High Cloud"
+}
+```
+
+## 出力内容
+
+- **サマリーシート**: Site ID 末尾2桁ごとの件数・売上合計・構成比・平均単価
+- **末尾XXシート**: 末尾ごとの取引明細（Site ID, カード番号, 取引ID, 日時, 結果, 金額）
+
+## 対象データ形式
+
+入力Excelの `《決済額明細》` セクション以下にある、`Result` が「売上確定」の行を抽出して集計します。
